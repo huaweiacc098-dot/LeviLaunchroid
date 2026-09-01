@@ -59,6 +59,7 @@ jobs:
       - name: Set GitHub API
         run: |
           FILE=app/src/main/java/org/levimc/launcher/util/GithubReleaseUpdater.java
+
           test -f "$FILE" || exit 1
 
           sed -i \
@@ -68,6 +69,7 @@ jobs:
       - name: Set app name
         run: |
           FILE=app/src/main/res/values/strings.xml
+
           test -f "$FILE" || exit 1
 
           sed -i \
@@ -78,6 +80,7 @@ jobs:
         run: |
           SOURCE=modify/GamePackageManager.init
           TARGET=app/src/main/java/org/levimc/launcher/core/minecraft/GamePackageManager.kt
+          TEMP_FILE="$RUNNER_TEMP/GamePackageManager.init"
 
           if ! git cat-file -e "origin/main:$SOURCE" 2>/dev/null; then
             echo "$SOURCE not found on main"
@@ -91,9 +94,9 @@ jobs:
             exit 0
           fi
 
-          git show "origin/main:$SOURCE" > "$SOURCE"
+          git show "origin/main:$SOURCE" > "$TEMP_FILE"
 
-          python3 - "$SOURCE" "$TARGET" <<'PY'
+          python3 - "$TEMP_FILE" "$TARGET" <<'PY'
           import re
           import sys
 
